@@ -11,5 +11,10 @@
   "preloadedJs": [
     {"path": "scripts/ct.js"},
     {"path": "scripts/htmlparser.js"}
+  ],
+  "preloadedCss": [
+    {
+      "path": "styles/cp.css"
+    }
   ]
 }
