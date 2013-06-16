@@ -21,12 +21,64 @@ H5P.ContinuousText.prototype.attach = function ($wrapper) {
 
 H5P.ContinuousText.Engine = (function() {
 
+  // Fit nodes from $document into $target while preventing $target from
+  // overflowing $container.  Will call itself recursively to add child nodes
+  // if the parent node does not fit.
+  function fitText($container, $target, $document) {
+    var containerBottom = $container.offset().top + $container.innerHeight();
+    $document.contents().each(function (index) {
+      var thisBottom, $node, $clone, words,
+        i = 0,
+        text = "",
+        rest = "";
+
+      // Proper DOM node. Attempt to fit.
+      if (this.nodeType == 1) {
+        $node = H5P.jQuery(this);
+        $target.append($node); // Need to append it here to get height calculated by browser.
+        thisBottom = $node.offset().top + $node.outerHeight();
+        if (thisBottom > containerBottom) {
+          // Pull back to the document.
+          $clone = $node.clone();
+          $document.prepend($clone);
+          $node.empty();
+          fitText($container, $node, $clone);
+          return false;
+        }
+      } else if (this.nodeType == 3) {
+        // Text node. Might need to split.
+        $target.append(this);
+        // Test if $target overflows.
+        thisBottom = $target.offset().top + $target.outerHeight();
+        if (thisBottom > containerBottom) {
+          words = this.data.split(' ');
+          do {
+              i++;
+              text = words.slice(0, i).join(" ");
+              rest = words.slice(i).join(" ");
+              this.replaceData(0, this.data.length, text);
+              thisBottom = $target.offset().top + $target.outerHeight();
+          } while (thisBottom < containerBottom && i < words.length);
+          // Need to backtrack one word.
+          text = words.slice(0, i-1).join(" ");
+          rest = words.slice(i-1).join(" ");
+          this.replaceData(0, this.data.length, text);
+          $document.prepend(rest);
+
+          return false;
+        }
+      } else {
+        // Ignore. Probably a comment.
+        // console.log("Node type " + this.nodeType + " not supported");
+      }
+    });
+  }
+
   return {
     run: function (cpEditor) {
-      var slides = cpEditor.params;
-      var wrappers = cpEditor.ct.wrappers;
-      var content = cpEditor.field.field.fields[2].text;
-      var $ = H5P.jQuery;
+      var slides = cpEditor.params,
+        wrappers = cpEditor.ct.wrappers,
+        content = cpEditor.field.field.fields[2].text;
 
       // Find all ct elements.
       var ctElements = [];
@@ -37,9 +89,9 @@ H5P.ContinuousText.Engine = (function() {
       });
 
       // Temporary document DOM.
-      var $temporaryDocument = $('<div/>').html(content);
+      var $temporaryDocument = H5P.jQuery('<div/>').html(content);
 
-      $.each(ctElements, function (idx, element) {
+      H5P.jQuery.each(ctElements, function (idx, element) {
         var $container = wrappers[element.index];
         var $newParent = $container.clone();
         var $ct = $newParent.find('.ct');
@@ -58,17 +110,8 @@ H5P.ContinuousText.Engine = (function() {
         }
         else {
           $ct.html('');
-          $blocks.each(function () {
-            var $block = $(this);
-            $ct.append($block); // Append it to get height calculated by browser.
-            var thisBottom = $block.offset().top + $block.outerHeight();
-            if (thisBottom > containerBottom) {
-              // Pull back to the temp doc. This would be the perfect place to split it up.
-              $temporaryDocument.prepend($block);
+          fitText($newParent, $ct, $temporaryDocument);
 
-              return false;
-            }
-          });
           // Store data on element
           element.action.params.text = $ct.html();
           $container.find('.ct').html(element.action.params.text);
