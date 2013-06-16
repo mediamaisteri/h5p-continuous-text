@@ -118,7 +118,6 @@ H5P.ContinuousText.Engine = (function() {
         }
         // Cleanup
         $newParent.remove();
-        $container.css('background-color', 'pink');
       });
       // Cleanup Temporary document.
       $temporaryDocument.remove();
