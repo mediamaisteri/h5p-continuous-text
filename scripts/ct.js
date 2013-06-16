@@ -78,46 +78,39 @@ H5P.ContinuousText.Engine = (function() {
     run: function (cpEditor) {
       var slides = cpEditor.params,
         wrappers = cpEditor.ct.wrappers,
-        content = cpEditor.field.field.fields[2].text;
+        content = cpEditor.field.field.fields[2].text,
+        $temporaryDocument = H5P.jQuery('<div/>').html(content),
+        ctElements = [];
 
       // Find all ct elements.
-      var ctElements = [];
       H5P.jQuery.each(slides, function(slideIdx, slide){
         ctElements = ctElements.concat(slide.elements.filter(function (element) {
           return element.action.library.split('.')[1].split(' ')[0] === 'ContinuousText';
         }));
       });
 
-      // Temporary document DOM.
-      var $temporaryDocument = H5P.jQuery('<div/>').html(content);
-
       H5P.jQuery.each(ctElements, function (idx, element) {
-        var $container = wrappers[element.index];
-        var $newParent = $container.clone();
-        var $ct = $newParent.find('.ct');
+        var $container = wrappers[element.index],
+          $elementClone = $container.clone(),
+          $innerContainer = $elementClone.find('.ct');
 
-        $newParent.appendTo('.h5p-slide.h5p-current');
-
-        // Inner height used here to allow for padding/margin/borders on containers.
-        var containerBottom = $newParent.offset().top + $newParent.innerHeight();
+        $elementClone.appendTo('.h5p-slide.h5p-current');
 
         // Remaining blocks in the temporary document.
         $blocks = $temporaryDocument.children();
-
         if ($blocks.length === 0) {
           $container.addClass('no-more-content');
-          $ct.html('-- no more content --');
-        }
-        else {
-          $ct.html('');
-          fitText($newParent, $ct, $temporaryDocument);
+          $container.find('.ct').html('-- no more content --');
+        } else {
+          $innerContainer.html('');
+          fitText($elementClone, $innerContainer, $temporaryDocument);
 
           // Store data on element
-          element.action.params.text = $ct.html();
+          element.action.params.text = $innerContainer.html();
           $container.find('.ct').html(element.action.params.text);
         }
         // Cleanup
-        $newParent.remove();
+        $elementClone.remove();
       });
       // Cleanup Temporary document.
       $temporaryDocument.remove();
