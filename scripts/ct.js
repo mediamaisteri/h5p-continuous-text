@@ -26,14 +26,14 @@ H5P.ContinuousText.Engine = (function() {
   // if the parent node does not fit.
   function fitText($container, $target, $document) {
     var containerBottom = $container.offset().top + $container.innerHeight();
-    $document.contents().each(function (index) {
+    $document.contents().each(function () {
       var thisBottom, $node, $clone, words,
         i = 0,
         text = "",
         rest = "";
 
       // Proper DOM node. Attempt to fit.
-      if (this.nodeType == 1) {
+      if (this.nodeType === 1) {
         $node = H5P.jQuery(this);
         $target.append($node); // Need to append it here to get height calculated by browser.
         thisBottom = $node.offset().top + $node.outerHeight();
@@ -45,7 +45,7 @@ H5P.ContinuousText.Engine = (function() {
           fitText($container, $node, $clone);
           return false;
         }
-      } else if (this.nodeType == 3) {
+      } else if (this.nodeType === 3) {
         // Text node. Might need to split.
         $target.append(this);
         // Test if $target overflows.
@@ -78,7 +78,7 @@ H5P.ContinuousText.Engine = (function() {
     run: function (cpEditor) {
       var slides = cpEditor.params,
         wrappers = cpEditor.ct.wrappers,
-        content = cpEditor.field.field.fields[2].text,
+        content = cpEditor.params[0].ct,
         $temporaryDocument = H5P.jQuery('<div/>').html(content),
         ctElements = [];
 
@@ -88,20 +88,23 @@ H5P.ContinuousText.Engine = (function() {
           return element.action.library.split('.')[1].split(' ')[0] === 'ContinuousText';
         }));
       });
+      // TODO: This is heavy, consider using a single for loop instead.
 
       H5P.jQuery.each(ctElements, function (idx, element) {
         var $container = wrappers[element.index],
           $elementClone = $container.clone(),
           $innerContainer = $elementClone.find('.ct');
 
-        $elementClone.appendTo('.h5p-slide.h5p-current');
+        $elementClone.appendTo(cpEditor.cp.$current);
 
         // Remaining blocks in the temporary document.
-        $blocks = $temporaryDocument.children();
+        var $blocks = $temporaryDocument.children();
         if ($blocks.length === 0) {
           $container.addClass('no-more-content');
-          $container.find('.ct').html('-- no more content --');
-        } else {
+          $container.find('.ct').html('<em>No more content</em>');
+          element.action.params.text = '';
+        }
+        else {
           $innerContainer.html('');
           fitText($elementClone, $innerContainer, $temporaryDocument);
 
