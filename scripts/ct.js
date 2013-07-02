@@ -76,6 +76,14 @@ H5P.ContinuousText.Engine = (function() {
 
   return {
     run: function (cpEditor) {
+      
+      // If there are no CT-elements, this functions 
+      // does not need to run. Also, if we let it run, there will
+      // be some undefined-errors in the console.
+      if(cpEditor.ct === undefined) {
+        return;
+      }
+      
       var slides = cpEditor.params,
         wrappers = cpEditor.ct.wrappers,
         content = cpEditor.params[0].ct,
