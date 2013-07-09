@@ -4,9 +4,9 @@ var H5P = H5P || {};
  * Constructor.
  *
  * @param {object} params Options for this library.
- * @param {string} contentPath The path to our content folder.
+ * @param {int} id Content identifier
  */
-H5P.ContinuousText = function (params, contentPath) {
+H5P.ContinuousText = function (params, id) {
   this.text = params.text === undefined ? '<div class="ct"><em>New text</em></div>' : '<div class="ct">'+params.text+'</div>';
 };
 
@@ -69,7 +69,6 @@ H5P.ContinuousText.Engine = (function() {
         }
       } else {
         // Ignore. Probably a comment.
-        // console.log("Node type " + this.nodeType + " not supported");
       }
     });
   }
