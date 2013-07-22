@@ -9,7 +9,6 @@
   "machineName": "H5P.ContinuousText",
   "author": "Amendor AS",
   "preloadedJs": [
-    {"path": "scripts/ct.js"},
-    {"path": "scripts/htmlparser.js"}
+    {"path": "scripts/ct.js"}
   ]
 }
