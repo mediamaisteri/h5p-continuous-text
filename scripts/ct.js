@@ -28,9 +28,9 @@ H5P.ContinuousText.Engine = (function() {
     var containerBottom = $container.offset().top + $container.innerHeight();
     $document.contents().each(function () {
       var thisBottom, $node, $clone, words,
-        i = 0,
-        text = "",
-        rest = "";
+      i = 0,
+      text = "",
+      rest = "";
 
       // Proper DOM node. Attempt to fit.
       if (this.nodeType === 1) {
@@ -53,11 +53,11 @@ H5P.ContinuousText.Engine = (function() {
         if (thisBottom > containerBottom) {
           words = this.data.split(' ');
           do {
-              i++;
-              text = words.slice(0, i).join(" ");
-              rest = words.slice(i).join(" ");
-              this.replaceData(0, this.data.length, text);
-              thisBottom = $target.offset().top + $target.outerHeight();
+            i++;
+            text = words.slice(0, i).join(" ");
+            rest = words.slice(i).join(" ");
+            this.replaceData(0, this.data.length, text);
+            thisBottom = $target.offset().top + $target.outerHeight();
           } while (thisBottom < containerBottom && i < words.length);
           // Need to backtrack one word.
           text = words.slice(0, i-1).join(" ");
@@ -75,14 +75,14 @@ H5P.ContinuousText.Engine = (function() {
 
   return {
     run: function (cpEditor) {
-      
-      // If there are no CT-elements, this functions 
+
+      // If there are no CT-elements, this functions
       // does not need to run. Also, if we let it run, there will
       // be some undefined-errors in the console.
       if(cpEditor.ct === undefined) {
         return;
       }
-      
+
       var slides = cpEditor.params,
         wrappers = cpEditor.ct.wrappers,
         content = cpEditor.params[0].ct,
