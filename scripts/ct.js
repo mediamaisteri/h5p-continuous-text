@@ -75,20 +75,20 @@ H5P.ContinuousText.Engine = (function() {
 
   return {
     run: function (cpEditor) {
+      var elements = cpEditor.getCTs();
+
       // Do not run if there are no CT-elements
-      if (cpEditor.ctElements === undefined) {
+      if (!elements.length) {
         return;
       }
 
-      var slides = cpEditor.params;
-      var elements = cpEditor.ctElements;
-      var content = slides[0].ct;
+      var content = cpEditor.params[0].ct;
       var $temporaryDocument = H5P.jQuery('<div/>').html(content);
 
       for (var i = 0; i < elements.length; i++) {
         var element = elements[i];
 
-        var $container = element.$wrapper;
+        var $container = element.element.$wrapper;
         var $elementClone = $container.clone();
         var $innerContainer = $elementClone.find('.ct');
 
@@ -109,7 +109,7 @@ H5P.ContinuousText.Engine = (function() {
           element.params.action.params.text = $innerContainer.html();
           $container.find('.ct').html(element.params.action.params.text);
         }
-
+        
         // Cleanup
         $elementClone.remove();
       }
