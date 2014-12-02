@@ -28,9 +28,9 @@ H5P.ContinuousText.Engine = (function() {
     var containerBottom = $container.offset().top + $container.innerHeight();
     $document.contents().each(function () {
       var thisBottom, $node, $clone, words,
-        i = 0,
-        text = "",
-        rest = "";
+      i = 0,
+      text = "",
+      rest = "";
 
       // Proper DOM node. Attempt to fit.
       if (this.nodeType === 1) {
@@ -53,11 +53,11 @@ H5P.ContinuousText.Engine = (function() {
         if (thisBottom > containerBottom) {
           words = this.data.split(' ');
           do {
-              i++;
-              text = words.slice(0, i).join(" ");
-              rest = words.slice(i).join(" ");
-              this.replaceData(0, this.data.length, text);
-              thisBottom = $target.offset().top + $target.outerHeight();
+            i++;
+            text = words.slice(0, i).join(" ");
+            rest = words.slice(i).join(" ");
+            this.replaceData(0, this.data.length, text);
+            thisBottom = $target.offset().top + $target.outerHeight();
           } while (thisBottom < containerBottom && i < words.length);
           // Need to backtrack one word.
           text = words.slice(0, i-1).join(" ");
@@ -75,20 +75,20 @@ H5P.ContinuousText.Engine = (function() {
 
   return {
     run: function (cpEditor) {
+      var elements = cpEditor.getCTs();
+
       // Do not run if there are no CT-elements
-      if (cpEditor.ctElements === undefined) {
+      if (!elements.length) {
         return;
       }
-      
-      var slides = cpEditor.params;
-      var elements = cpEditor.ctElements;
-      var content = slides[0].ct;
+
+      var content = cpEditor.params[0].ct;
       var $temporaryDocument = H5P.jQuery('<div/>').html(content);
 
       for (var i = 0; i < elements.length; i++) {
         var element = elements[i];
 
-        var $container = element.$wrapper;
+        var $container = element.element.$wrapper;
         var $elementClone = $container.clone();
         var $innerContainer = $elementClone.find('.ct');
 
@@ -109,7 +109,7 @@ H5P.ContinuousText.Engine = (function() {
           element.params.action.params.text = $innerContainer.html();
           $container.find('.ct').html(element.params.action.params.text);
         }
-
+        
         // Cleanup
         $elementClone.remove();
       }
