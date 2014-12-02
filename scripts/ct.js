@@ -28,9 +28,9 @@ H5P.ContinuousText.Engine = (function() {
     var containerBottom = $container.offset().top + $container.innerHeight();
     $document.contents().each(function () {
       var thisBottom, $node, $clone, words,
-        i = 0,
-        text = "",
-        rest = "";
+      i = 0,
+      text = "",
+      rest = "";
 
       // Proper DOM node. Attempt to fit.
       if (this.nodeType === 1) {
@@ -53,11 +53,11 @@ H5P.ContinuousText.Engine = (function() {
         if (thisBottom > containerBottom) {
           words = this.data.split(' ');
           do {
-              i++;
-              text = words.slice(0, i).join(" ");
-              rest = words.slice(i).join(" ");
-              this.replaceData(0, this.data.length, text);
-              thisBottom = $target.offset().top + $target.outerHeight();
+            i++;
+            text = words.slice(0, i).join(" ");
+            rest = words.slice(i).join(" ");
+            this.replaceData(0, this.data.length, text);
+            thisBottom = $target.offset().top + $target.outerHeight();
           } while (thisBottom < containerBottom && i < words.length);
           // Need to backtrack one word.
           text = words.slice(0, i-1).join(" ");
@@ -75,32 +75,22 @@ H5P.ContinuousText.Engine = (function() {
 
   return {
     run: function (cpEditor) {
-      
-      // If there are no CT-elements, this functions 
-      // does not need to run. Also, if we let it run, there will
-      // be some undefined-errors in the console.
-      if(cpEditor.ct === undefined) {
+      var elements = cpEditor.getCTs();
+
+      // Do not run if there are no CT-elements
+      if (!elements.length) {
         return;
       }
-      
-      var slides = cpEditor.params,
-        wrappers = cpEditor.ct.wrappers,
-        content = cpEditor.params[0].ct,
-        $temporaryDocument = H5P.jQuery('<div/>').html(content),
-        ctElements = [];
 
-      // Find all ct elements.
-      H5P.jQuery.each(slides, function(slideIdx, slide){
-        ctElements = ctElements.concat(slide.elements.filter(function (element) {
-          return element.action.library.split('.')[1].split(' ')[0] === 'ContinuousText';
-        }));
-      });
-      // TODO: This is heavy, consider using a single for loop instead.
+      var content = cpEditor.params[0].ct;
+      var $temporaryDocument = H5P.jQuery('<div/>').html(content);
 
-      H5P.jQuery.each(ctElements, function (idx, element) {
-        var $container = wrappers[element.index],
-          $elementClone = $container.clone(),
-          $innerContainer = $elementClone.find('.ct');
+      for (var i = 0; i < elements.length; i++) {
+        var element = elements[i];
+
+        var $container = element.element.$wrapper;
+        var $elementClone = $container.clone();
+        var $innerContainer = $elementClone.find('.ct');
 
         $elementClone.appendTo(cpEditor.cp.$current);
 
@@ -109,19 +99,21 @@ H5P.ContinuousText.Engine = (function() {
         if ($blocks.length === 0) {
           $container.addClass('no-more-content');
           $container.find('.ct').html('<em>No more content</em>');
-          element.action.params.text = '';
+          element.params.action.params.text = '';
         }
         else {
           $innerContainer.html('');
           fitText($elementClone, $innerContainer, $temporaryDocument);
 
           // Store data on element
-          element.action.params.text = $innerContainer.html();
-          $container.find('.ct').html(element.action.params.text);
+          element.params.action.params.text = $innerContainer.html();
+          $container.find('.ct').html(element.params.action.params.text);
         }
+        
         // Cleanup
         $elementClone.remove();
-      });
+      }
+
       // Cleanup Temporary document.
       $temporaryDocument.remove();
     }
