@@ -82,7 +82,7 @@ H5P.ContinuousText.Engine = (function() {
         return;
       }
 
-      var content = cpEditor.params[0].ct;
+      var content = cpEditor.params.ct;
       var $temporaryDocument = H5P.jQuery('<div/>').html(content);
 
       for (var i = 0; i < elements.length; i++) {
