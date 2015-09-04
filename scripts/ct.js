@@ -85,10 +85,22 @@ H5P.ContinuousText.Engine = (function() {
       var content = cpEditor.params.ct;
       var $temporaryDocument = H5P.jQuery('<div/>').html(content);
 
+      var opacity = (elements[0].params.backgroundOpacity === undefined || elements[0].params.backgroundOpacity === 0 ? null : elements[0].params.backgroundOpacity);
+
       for (var i = 0; i < elements.length; i++) {
         var element = elements[i];
 
         var $container = element.element.$wrapper;
+
+        // Update element visuals
+        if (opacity) {
+          $container.removeClass('h5p-transparent').css('backgroundColor', 'rgba(255, 255, 255, ' + (opacity / 100) + ')');
+        }
+        else {
+          $container.addClass('h5p-transparent').css('backgroundColor', '');
+        }
+        element.params.backgroundOpacity = opacity;
+
         var $elementClone = $container.clone();
         var $innerContainer = $elementClone.find('.ct');
 
@@ -109,7 +121,7 @@ H5P.ContinuousText.Engine = (function() {
           element.params.action.params.text = $innerContainer.html();
           $container.find('.ct').html(element.params.action.params.text);
         }
-        
+
         // Cleanup
         $elementClone.remove();
       }
