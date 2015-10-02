@@ -85,7 +85,7 @@ H5P.ContinuousText.Engine = (function() {
       var content = cpEditor.params.ct;
       var $temporaryDocument = H5P.jQuery('<div/>').html(content);
 
-      var opacity = (elements[0].params.backgroundOpacity === undefined || elements[0].params.backgroundOpacity === 0 ? null : elements[0].params.backgroundOpacity);
+      var opacity = (cpEditor.ct.params.backgroundOpacity === undefined || cpEditor.ct.params.backgroundOpacity === 0 ? null : cpEditor.ct.params.backgroundOpacity);
 
       for (var i = 0; i < elements.length; i++) {
         var element = elements[i];
