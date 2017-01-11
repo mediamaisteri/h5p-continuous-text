@@ -2,6 +2,7 @@
   {
     "name": "text",
     "type": "text",
+    "importance": "high",
     "widget": "html",
     "label": "Text",
     "tags": [
