@@ -1,8 +1,7 @@
 {
-  "semantics": [
+  "semantics":[
     {
-      "englishLabel": "Text",
-      "label": "Tekst"
+      "label":"Tekst"
     }
   ]
 }
