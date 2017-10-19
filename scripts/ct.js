@@ -4,9 +4,8 @@ var H5P = H5P || {};
  * Constructor.
  *
  * @param {object} params Options for this library.
- * @param {int} id Content identifier
  */
-H5P.ContinuousText = function (params, id) {
+H5P.ContinuousText = function (params) {
   this.text = params.text === undefined ? '<div class="ct"><em>New text</em></div>' : '<div class="ct">'+params.text+'</div>';
 };
 
